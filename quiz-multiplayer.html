@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheyenne's 35th Birthday Brunch 🥂</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07070e;
+  --surface: #10101c;
+  --card: #181828;
+  --border: rgba(255,255,255,.07);
+  --a1: #ff3cac;
+  --a2: #7c3aed;
+  --a3: #06b6d4;
+  --gold: #fbbf24;
+  --green: #10b981;
+  --red: #ef4444;
+  --text: #f1f0ff;
+  --muted: #6b6a8a;
+  --r: 14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+
+/* ─ Orbs ─ */
+.orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.13;animation:orb-drift 16s ease-in-out infinite alternate}
+.o1{width:600px;height:600px;background:var(--a1);top:-200px;left:-150px;animation-delay:0s}
+.o2{width:500px;height:500px;background:var(--a3);bottom:-150px;right:-100px;animation-delay:-5s}
+.o3{width:350px;height:350px;background:var(--gold);top:40%;left:50%;transform:translate(-50%,-50%);animation-delay:-10s}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(25px,18px) scale(1.07)}}
+
+/* ─ Layout ─ */
+#app{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:28px 18px 72px}
+.screen{display:none;animation:fadeUp .4s ease both}
+.screen.show{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─ Typography ─ */
+.display{font-family:'Bebas Neue',sans-serif}
+h1.hero{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,14vw,110px);line-height:.92;background:linear-gradient(135deg,var(--a1),var(--gold),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:12px}
+.sub{text-align:center;color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:36px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+
+/* ─ Inputs ─ */
+input[type=text]{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:15px 18px;font-size:17px;font-family:inherit;color:var(--text);outline:none;width:100%;transition:border-color .2s}
+input[type=text]:focus{border-color:var(--a1)}
+input[type=text]::placeholder{color:var(--muted)}
+
+/* ─ Buttons ─ */
+.btn{display:block;width:100%;padding:17px 22px;border-radius:var(--r);border:none;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:.05em;cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .2s;position:relative;overflow:hidden}
+.btn-primary{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(255,60,172,.3)}
+.btn-secondary{background:transparent;border:2px solid var(--border);color:var(--muted);font-size:16px;font-family:'DM Sans',sans-serif;font-weight:600}
+.btn-secondary:hover{border-color:var(--text);color:var(--text);box-shadow:none}
+.btn-teal{background:linear-gradient(135deg,var(--a3),var(--a2));color:#fff}
+.btn-teal:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(6,182,212,.3)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#f59e0b);color:#07070e}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(251,191,36,.3)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn+.btn{margin-top:10px}
+.btn-sm{width:auto;display:inline-block;padding:10px 20px;font-size:15px;border-radius:10px}
+
+/* ─ Cards ─ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px}
+.card+.card{margin-top:14px}
+
+/* ─ QR ─ */
+.qr-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:24px}
+.qr-box{background:#fff;border-radius:10px;padding:10px;display:inline-block}
+.game-code{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.15em;background:linear-gradient(135deg,var(--a1),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center}
+.game-code-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
+.join-url{font-size:13px;color:var(--muted);text-align:center;word-break:break-all}
+
+/* ─ Player list ─ */
+.player-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;min-height:40px}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:99px;padding:6px 14px;font-size:14px;font-weight:500;animation:popIn .25s ease both}
+@keyframes popIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.player-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+
+/* ─ Progress ─ */
+.prog-wrap{margin-bottom:24px}
+.prog-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.prog-track{height:5px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--a1),var(--gold));border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* ─ Timer ─ */
+.timer-ring{position:relative;width:48px;height:48px;flex-shrink:0}
+.timer-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.tr-track{fill:none;stroke:rgba(255,255,255,.08);stroke-width:3.5}
+.tr-fill{fill:none;stroke:var(--a1);stroke-width:3.5;stroke-linecap:round;transition:stroke-dashoffset .95s linear,stroke .4s}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px}
+.timer-row{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.timer-label{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+/* ─ Question ─ */
+.q-num{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--a1);margin-bottom:8px}
+.q-text{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,6vw,42px);line-height:1.08;margin-bottom:28px}
+
+/* ─ Options ─ */
+.opts{display:grid;gap:10px;margin-bottom:20px}
+.opts.two-col{grid-template-columns:1fr 1fr}
+.opt{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:16px 18px;color:var(--text);font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:border-color .2s,background .2s,transform .15s}
+.opt-letter{font-family:'Bebas Neue',sans-serif;font-size:17px;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.opt:hover:not(:disabled){border-color:var(--a1);transform:translateX(3px)}
+.opt.selected{border-color:var(--a2);background:rgba(124,58,237,.18)}
+.opt.selected .opt-letter{background:var(--a2);color:#fff}
+.opt.correct{border-color:var(--green);background:rgba(16,185,129,.12)}
+.opt.correct .opt-letter{background:var(--green);color:#07070e}
+.opt.wrong{border-color:var(--red);background:rgba(239,68,68,.1)}
+.opt.wrong .opt-letter{background:var(--red);color:#fff}
+.opt:disabled{cursor:default}
+
+/* ─ Fun fact ─ */
+.fun-fact{background:linear-gradient(135deg,rgba(255,60,172,.1),rgba(6,182,212,.1));border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:14px 18px;font-size:14px;line-height:1.6;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s;margin-bottom:18px}
+.fun-fact.show{opacity:1;transform:translateY(0)}
+.fun-fact strong{color:var(--gold)}
+
+/* ─ Leaderboard ─ */
+.lb-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.lb-head{padding:14px 20px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.1em;color:var(--gold);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.lb-row{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .2s;animation:fadeUp .3s ease both}
+.lb-row:last-child{border-bottom:none}
+.lb-row.me{background:rgba(255,215,36,.06);border-left:3px solid var(--gold)}
+.lb-rank{font-family:'Bebas Neue',sans-serif;font-size:22px;width:30px;color:var(--muted);text-align:center}
+.lb-rank.top{color:var(--gold)}
+.lb-name{flex:1;font-weight:500;font-size:15px}
+.lb-pts{font-family:'Bebas Neue',sans-serif;font-size:22px}
+.lb-delta{font-size:12px;color:var(--green);font-weight:600;margin-left:4px}
+
+/* ─ Score pill ─ */
+.score-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.22);border-radius:99px;padding:5px 14px;font-size:13px;font-weight:600;color:var(--gold)}
+
+/* ─ Status banner ─ */
+.status-banner{text-align:center;padding:20px;font-size:15px;color:var(--muted);line-height:1.6}
+.status-emoji{font-size:40px;display:block;margin-bottom:8px;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* ─ Waiting dots ─ */
+.waiting-dots span{animation:dot 1.4s ease-in-out infinite both}
+.waiting-dots span:nth-child(2){animation-delay:.2s}
+.waiting-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* ─ Results ─ */
+.result-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(90px,22vw,150px);background:linear-gradient(135deg,var(--a1),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;text-align:center}
+.result-verdict{font-family:'Bebas Neue',sans-serif;font-size:34px;text-align:center;margin-bottom:8px}
+.result-msg{color:var(--muted);text-align:center;font-size:15px;line-height:1.6;margin-bottom:32px}
+
+/* ─ Tiebreaker ─ */
+.tie-badge{display:inline-block;background:linear-gradient(135deg,var(--gold),#f59e0b);color:#07070e;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.1em;padding:4px 12px;border-radius:99px;margin-bottom:16px}
+.tie-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,6vw,38px);line-height:1.1;margin-bottom:12px}
+.tie-sub{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.5}
+
+/* ─ Confetti ─ */
+.conf{position:fixed;pointer-events:none;z-index:999;border-radius:2px;animation:conf-fall linear forwards}
+@keyframes conf-fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+
+/* ─ Host badge ─ */
+.host-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,60,172,.12);border:1px solid rgba(255,60,172,.25);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:700;color:var(--a1);letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px}
+
+/* ─ Answer count bar ─ */
+.ans-bar-wrap{margin-bottom:16px}
+.ans-bar-label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.ans-bar-track{height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.ans-bar-fill{height:100%;background:linear-gradient(90deg,var(--a3),var(--a2));border-radius:99px;transition:width .5s ease}
+
+/* ─ HR ─ */
+hr{border:none;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);margin:28px 0}
+
+/* Mobile tweaks */
+@media(max-width:480px){
+  .opts.two-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div id="app">
+
+<!-- ══ LANDING ══ -->
+<div class="screen show" id="s-land">
+  <!-- Birthday header -->
+  <div style="text-align:center;margin-bottom:18px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:99px;padding:6px 18px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">
+      🥂 Birthday Brunch &nbsp;·&nbsp; 35th Edition
+    </div>
+  </div>
+
+  <!-- Name -->
+  <div style="text-align:center;margin-bottom:6px">
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,5vw,26px);letter-spacing:.25em;text-transform:uppercase;background:linear-gradient(90deg,var(--a1),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Cheyenne</span>
+  </div>
+
+  <!-- Big stacked title -->
+  <h1 class="hero" style="margin-bottom:6px">How Well<br>Do You<br>Know Her?</h1>
+
+  <!-- Decorative divider with cake -->
+  <div style="display:flex;align-items:center;gap:10px;margin:0 auto 20px;max-width:320px">
+    <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15))"></div>
+    <span style="font-size:28px;animation:pulse 2s ease infinite;display:block">🎂</span>
+    <div style="flex:1;height:1px;background:linear-gradient(270deg,transparent,rgba(255,255,255,.15))"></div>
+  </div>
+
+  <p class="sub" style="margin-bottom:32px">A live multiplayer quiz in her honour.<br>14 questions · 15 seconds each · One winner</p>
+  <button class="btn btn-primary" onclick="showHostSetup()">🎮 HOST A GAME</button>
+  <button class="btn btn-secondary" style="margin-top:10px" onclick="showJoin()">📱 JOIN A GAME</button>
+</div>
+
+<!-- ══ HOST SETUP ══ -->
+<div class="screen" id="s-host-setup">
+  <div class="host-badge">👑 HOST</div>
+  <h2 class="display" style="font-size:42px;margin-bottom:8px">Create Game</h2>
+  <p class="sub" style="text-align:left">Your game, your pace. You control when each question launches.</p>
+  <div style="margin-bottom:20px">
+    <div class="section-label">Your name</div>
+    <input type="text" id="host-name-input" placeholder="Host name…" maxlength="24">
+  </div>
+  <button class="btn btn-primary" id="create-game-btn" onclick="createGame()" disabled>CREATE GAME 🚀</button>
+  <button class="btn btn-secondary" onclick="go('s-land')">← BACK</button>
+</div>
+
+<!-- ══ HOST LOBBY ══ -->
+<div class="screen" id="s-host-lobby">
+  <div class="host-badge">👑 HOST</div>
+  <div style="text-align:center;margin-bottom:16px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,6vw,34px);letter-spacing:.1em;background:linear-gradient(135deg,var(--a1),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Cheyenne's 35th Birthday Brunch</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px">Share the code or QR — no app needed, just a browser</div>
+  </div>
+  <div class="qr-wrap">
+    <div class="game-code-label">Game Code</div>
+    <div class="game-code" id="lb-game-code">—</div>
+    <div class="qr-box" id="qr-container"></div>
+    <div class="join-url" id="join-url-display"></div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-label" style="margin-bottom:12px">Players in lobby <span id="player-count" style="color:var(--a1)">(0)</span></div>
+    <div class="player-list" id="lobby-player-list"></div>
+  </div>
+  <button class="btn btn-gold" id="launch-game-btn" onclick="launchGame()" disabled>START GAME →</button>
+</div>
+
+<!-- ══ HOST QUESTION CONTROL ══ -->
+<div class="screen" id="s-host-q">
+  <div class="host-badge">👑 HOST CONTROL</div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="hq-counter">Q1/14</span><div class="score-pill">👥 <span id="hq-player-count">0</span> players</div></div>
+    <div class="prog-track"><div class="prog-fill" id="hq-prog"></div></div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="q-num" id="hq-num">Q1</div>
+    <div class="q-text" id="hq-text"></div>
+    <div class="ans-bar-wrap" id="hq-ans-wrap" style="display:none">
+      <div class="ans-bar-label">Answers received: <span id="hq-ans-count">0</span> / <span id="hq-total-players">0</span></div>
+      <div class="ans-bar-track"><div class="ans-bar-fill" id="hq-ans-bar" style="width:0%"></div></div>
+    </div>
+    <div id="hq-status" style="color:var(--muted);font-size:14px">Waiting to launch…</div>
+  </div>
+  <button class="btn btn-primary" id="hq-launch-btn" onclick="hostLaunchQuestion()">🚀 LAUNCH QUESTION</button>
+  <button class="btn btn-teal" id="hq-reveal-btn" onclick="hostReveal()" style="display:none">👁 REVEAL ANSWERS</button>
+  <button class="btn btn-gold" id="hq-next-btn" onclick="hostNextQ()" style="display:none">NEXT QUESTION →</button>
+</div>
+
+<!-- ══ HOST LEADERBOARD ══ -->
+<div class="screen" id="s-host-lb">
+  <div class="host-badge">👑 HOST CONTROL</div>
+  <h2 class="display" style="font-size:38px;margin-bottom:4px">Live Standings</h2>
+  <p style="color:var(--muted);font-size:14px;margin-bottom:20px">After Question <span id="hlb-q-num">1</span></p>
+  <div id="host-lb-content"></div>
+  <button class="btn btn-primary" id="hlb-continue-btn" onclick="hostContinueFromLb()">CONTINUE →</button>
+</div>
+
+<!-- ══ HOST TIEBREAKER ══ -->
+<div class="screen" id="s-host-tie">
+  <div class="host-badge">👑 HOST CONTROL</div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="tie-badge">🔥 TIEBREAKER</div>
+    <div class="tie-title">It's a tie! 🤯</div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:8px">Players are answering the bonus question. Collect their answers and judge the best one!</p>
+    <div class="ans-bar-wrap">
+      <div class="ans-bar-label">Responses: <span id="htie-count">0</span></div>
+      <div class="ans-bar-track"><div class="ans-bar-fill" id="htie-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div id="htie-answers" class="card" style="margin-bottom:16px;display:none">
+    <div class="section-label" style="margin-bottom:12px">Player Responses</div>
+    <div id="htie-answers-list"></div>
+  </div>
+  <button class="btn btn-secondary" id="htie-show-btn" onclick="showTiebreakerAnswers()">👁 SHOW ALL ANSWERS</button>
+  <button class="btn btn-gold" style="margin-top:10px" onclick="hostEndGame()">🏆 END GAME & SHOW FINAL RESULTS</button>
+</div>
+
+<!-- ══ HOST FINAL RESULTS ══ -->
+<div class="screen" id="s-host-final">
+  <div class="host-badge">👑 HOST</div>
+  <h2 class="display" style="font-size:44px;text-align:center;margin-bottom:4px">FINAL RESULTS</h2>
+  <p style="color:var(--muted);font-size:14px;text-align:center;margin-bottom:4px">Cheyenne's 35th Birthday Brunch Quiz 🥂</p>
+  <p style="color:var(--muted);font-size:13px;text-align:center;margin-bottom:24px">The people have spoken 👑</p>
+  <div id="host-final-lb"></div>
+  <button class="btn btn-primary" onclick="location.reload()">PLAY AGAIN 🔄</button>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- ════════ PLAYER SCREENS ═════════ -->
+<!-- ══════════════════════════════════ -->
+
+<!-- ══ JOIN ══ -->
+<div class="screen" id="s-join">
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:99px;padding:6px 18px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">🥂 Cheyenne's 35th Birthday Brunch</div>
+  </div>
+  <span style="font-size:48px;display:block;text-align:center;margin-bottom:12px">📱</span>
+  <h2 class="display" style="font-size:44px;margin-bottom:8px;text-align:center">Join Game</h2>
+  <p class="sub">Enter the 6-digit code shown on the host's screen</p>
+  <div style="margin-bottom:16px">
+    <div class="section-label">Game Code</div>
+    <input type="text" id="join-code-input" placeholder="Enter code…" maxlength="6" style="text-transform:uppercase;letter-spacing:.15em;font-family:'Bebas Neue',sans-serif;font-size:28px">
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="section-label">Your Name</div>
+    <input type="text" id="join-name-input" placeholder="Enter your name…" maxlength="24">
+  </div>
+  <div id="join-error" style="color:var(--red);font-size:14px;margin-bottom:12px;display:none"></div>
+  <button class="btn btn-primary" id="join-btn" onclick="joinGame()" disabled>JOIN GAME 🎯</button>
+  <button class="btn btn-secondary" onclick="go('s-land')">← BACK</button>
+</div>
+
+<!-- ══ PLAYER LOBBY ══ -->
+<div class="screen" id="s-player-lobby">
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:99px;padding:6px 18px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">🎂 Cheyenne's 35th Birthday Brunch</div>
+  </div>
+  <div class="status-banner">
+    <span class="status-emoji">⏳</span>
+    <strong style="display:block;font-size:20px;font-family:'Bebas Neue',sans-serif;color:var(--text)">You're in!</strong>
+    <p>Waiting for the host to start the game<span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></p>
+  </div>
+  <div class="card">
+    <div class="section-label" style="margin-bottom:12px">Players Joined</div>
+    <div class="player-list" id="player-lobby-list"></div>
+  </div>
+</div>
+
+<!-- ══ PLAYER WAITING FOR Q ══ -->
+<div class="screen" id="s-player-wait">
+  <div class="status-banner">
+    <span class="status-emoji">🎯</span>
+    <strong style="display:block;font-size:20px;font-family:'Bebas Neue',sans-serif;color:var(--text)" id="pw-title">Get Ready!</strong>
+    <p id="pw-sub">The host is about to launch the next question<span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></p>
+    <div class="score-pill" style="margin-top:12px;display:inline-flex">⭐ <span id="pw-score">0</span> pts</div>
+  </div>
+</div>
+
+<!-- ══ PLAYER QUESTION ══ -->
+<div class="screen" id="s-player-q">
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="pq-counter">Q1/14</span><div class="score-pill">⭐ <span id="pq-score">0</span> pts</div></div>
+    <div class="prog-track"><div class="prog-fill" id="pq-prog"></div></div>
+  </div>
+  <div class="timer-row">
+    <div class="timer-ring">
+      <svg viewBox="0 0 48 48">
+        <circle class="tr-track" cx="24" cy="24" r="20"/>
+        <circle class="tr-fill" id="pq-timer-circle" cx="24" cy="24" r="20" stroke-dasharray="125.6" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-num" id="pq-timer-num">15</div>
+    </div>
+    <span class="timer-label">Seconds left</span>
+  </div>
+  <div class="q-num" id="pq-num">Q1</div>
+  <div class="q-text" id="pq-text"></div>
+  <div class="opts" id="pq-opts"></div>
+  <div class="fun-fact" id="pq-fact"></div>
+</div>
+
+<!-- ══ PLAYER LEADERBOARD ══ -->
+<div class="screen" id="s-player-lb">
+  <h2 class="display" style="font-size:36px;margin-bottom:4px">Standings</h2>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:20px">After Q<span id="plb-q-num">1</span> — host will continue shortly…</p>
+  <div id="player-lb-content"></div>
+</div>
+
+<!-- ══ PLAYER TIEBREAKER ══ -->
+<div class="screen" id="s-player-tie">
+  <div class="tie-badge">🔥 TIEBREAKER</div>
+  <div class="tie-title" id="ptie-title">Bonus Question</div>
+  <div class="tie-sub" id="ptie-sub">Type your answer — the host will pick the winner!</div>
+  <textarea id="ptie-input" placeholder="Your answer…" style="width:100%;background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:15px 18px;font-size:16px;font-family:inherit;color:var(--text);outline:none;resize:vertical;min-height:100px;margin-bottom:16px;transition:border-color .2s" onfocus="this.style.borderColor='var(--a1)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+  <button class="btn btn-primary" id="ptie-submit-btn" onclick="submitTiebreaker()">SUBMIT ANSWER ✨</button>
+  <div id="ptie-submitted" style="display:none;text-align:center;padding:20px;color:var(--green);font-weight:600">✅ Answer submitted! Waiting for host…</div>
+</div>
+
+<!-- ══ PLAYER FINAL ══ -->
+<div class="screen" id="s-player-final">
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:99px;padding:6px 18px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">🎂 Happy 35th Cheyenne!</div>
+  </div>
+  <div class="result-big" id="p-final-score">0</div>
+  <div style="color:var(--muted);font-size:12px;text-align:center;text-transform:uppercase;letter-spacing:.1em;margin-top:4px;margin-bottom:16px">correct answers</div>
+  <div class="result-verdict" id="p-final-verdict"></div>
+  <div class="result-msg" id="p-final-msg"></div>
+  <div id="player-final-lb"></div>
+  <button class="btn btn-secondary" onclick="location.reload()">PLAY AGAIN 🔄</button>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ─────────────────────────────────────────
+//  Firebase Config (free project — shared)
+//  Uses a public anonymous-access DB for demo
+// ─────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyDemo_replace_with_real_key",
+  authDomain: "quiz-demo.firebaseapp.com",
+  databaseURL: "https://quiz-multiplayer-demo-default-rtdb.firebaseio.com",
+  projectId: "quiz-multiplayer-demo",
+  storageBucket: "quiz-multiplayer-demo.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:0000000000000000"
+};
+
+// ─── NOTE TO HOST ─────────────────────────────────────────────────────────────
+// This quiz uses Firebase for real-time sync. To use it:
+// 1. Go to https://console.firebase.google.com
+// 2. Create a free project → Add Web App → copy your config above
+// 3. Enable Realtime Database (start in test mode)
+// 4. Replace the firebaseConfig object above with yours
+// 5. Host this file on any static host (GitHub Pages, Netlify, etc.)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Detect if Firebase config is demo/placeholder
+const IS_DEMO = firebaseConfig.apiKey === "AIzaSyDemo_replace_with_real_key";
+
+// ─── QUESTIONS ───────────────────────────
+const QUESTIONS = [
+  { q:"What's her favourite colour?", emoji:"🎨", opts:["Purple","Green","Blue","Pink"], ans:1, fact:"She picks **Green** — fresh, vibrant, and full of life. Just like her!" },
+  { q:"What's her go-to comfort food?", emoji:"🥟", opts:["Pizza","Ramen","Chinese Dumplings","Tacos"], ans:2, fact:"Nothing beats **Chinese Dumplings** for her. The ultimate comfort meal." },
+  { q:"One artist/band for the rest of her life?", emoji:"🎵", opts:["Rihanna","Taylor Swift","Beyoncé","SZA"], ans:2, fact:"It's **Beyoncé** and it's not even close. Queen only." },
+  { q:"Favourite film or TV show?", emoji:"📺", opts:["Suits","Friends","Grey's Anatomy","The Office"], ans:1, fact:"Could she BE any more of a **Friends** fan? The answer is no." },
+  { q:"Most ordered drink at a bar or restaurant?", emoji:"🍹", opts:["Mojito","Aperol Spritz","Wine","Spicy Margarita"], ans:3, fact:"A **Spicy Margarita** — bold, a little fiery, iconic. Very on brand." },
+  { q:"How would she describe herself in ONE word?", emoji:"✨", opts:["Gemini","Ambitious","Chaotic","Iconic"], ans:0, fact:"She said **Gemini** — a whole personality in one word, and honestly? fair enough." },
+  { q:"What's she most likely doing on a lazy Sunday?", emoji:"🛋️", opts:["Brunch & shopping","Gym & meal prep","Cook and watch TV","Reading in bed"], ans:2, fact:"**Cook and watch TV** — the perfect Sunday formula. Don't disturb her." },
+  { q:"Top of her travel bucket list?", emoji:"✈️", opts:["Tokyo","Seoul","New York","Cape Town"], ans:1, fact:"**Seoul** is calling her name — the food, culture, and K-vibes are everything." },
+  { q:"Most spontaneous thing she's ever done?", emoji:"🌍", opts:["Quit a job on the spot","Move to London","Skydived","Road-tripped solo"], ans:1, fact:"She just packed up and **moved to London**. A whole vibe, a whole era." },
+  { q:"What did she want to be as a child?", emoji:"🩺", opts:["Lawyer","Architect","Teacher","Doctor"], ans:3, fact:"A **Doctor** — she's always had that big-picture, helping-people energy." },
+  { q:"Skill or hobby she wants to pick up?", emoji:"🍰", opts:["Pottery","Painting","Baking","Pilates"], ans:2, fact:"**Baking** — and we are all here for the taste-testing duties." },
+  { q:"What is she most likely to impulse buy?", emoji:"🛍️", opts:["Shoes","A plant","Candles","Dessert"], ans:3, fact:"**Dessert** every time. No regrets, only joy." },
+  { q:"What is her most-used emoji?", emoji:"📱", opts:["😂","💀","😅","🙃"], ans:2, fact:"**😅** — the nervous laugh emoji is doing a LOT of heavy lifting." },
+  { q:"If she could wake up with one superpower?", emoji:"🦸", opts:["Invisibility","Mind reading","Time travel","Teleportation"], ans:3, fact:"**Teleportation** — makes sense when Seoul is on the bucket list and London traffic exists." }
+];
+
+const TIEBREAKER = {
+  q: "If she wrote a memoir, what would the title be?",
+  sub: "Be creative — the host will pick the best answer! No right or wrong here."
+};
+
+const VERDICTS = [
+  { min:0,  max:3,  title:"WHO ARE YOU? 👀",     msg:"You might need to spend a little more quality time together…" },
+  { min:4,  max:7,  title:"DECENT EFFORT 🤷",    msg:"You know the broad strokes but the details? Work in progress." },
+  { min:8,  max:10, title:"CLOSE FRIEND VIBES 💅", msg:"You know her well! The dedicated bestie energy is very real." },
+  { min:11, max:12, title:"RIDE OR DIE 🔥",       msg:"You've been paying attention. Big up yourself!" },
+  { min:13, max:14, title:"ARE YOU HER? 👑",       msg:"14/14 is unhinged. You either love her deeply or you ARE her." }
+];
+
+// ─── STATE ───────────────────────────────
+let gameId = null;
+let playerId = null;
+let playerName = '';
+let isHost = false;
+let myScore = 0;
+let currentQ = 0;
+let answered = false;
+let timerInterval = null;
+let gameRef = null;
+let db = null;
+
+// Demo mode: simulates Firebase locally using localStorage
+let demoState = {};
+let demoListeners = {};
+
+// ─── FIREBASE / DEMO INIT ────────────────
+function initFirebase() {
+  if (IS_DEMO) return; // use demo mode
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch(e) { console.warn('Firebase init failed, using demo mode'); }
+}
+
+// Demo DB shim — works for same-device testing
+// In production replace with real Firebase
+function dbSet(path, value) {
+  if (db) return db.ref(path).set(value);
+  const parts = path.split('/').filter(Boolean);
+  let obj = demoState;
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (!obj[parts[i]]) obj[parts[i]] = {};
+    obj = obj[parts[i]];
+  }
+  obj[parts[parts.length-1]] = value;
+  triggerListeners(path, value);
+  localStorage.setItem('quiz_demo_state', JSON.stringify(demoState));
+  return Promise.resolve();
+}
+
+function dbUpdate(path, value) {
+  if (db) return db.ref(path).update(value);
+  Object.entries(value).forEach(([k, v]) => dbSet(path + '/' + k, v));
+  return Promise.resolve();
+}
+
+function dbGet(path) {
+  if (db) return db.ref(path).get().then(s => s.val());
+  const parts = path.split('/').filter(Boolean);
+  let obj = demoState;
+  for (const p of parts) { if (obj == null) return Promise.resolve(null); obj = obj[p]; }
+  return Promise.resolve(obj ?? null);
+}
+
+function dbOn(path, cb) {
+  if (db) { db.ref(path).on('value', s => cb(s.val())); return; }
+  if (!demoListeners[path]) demoListeners[path] = [];
+  demoListeners[path].push(cb);
+  // immediate call
+  dbGet(path).then(v => cb(v));
+}
+
+function triggerListeners(path, value) {
+  // trigger exact path
+  if (demoListeners[path]) demoListeners[path].forEach(cb => cb(value));
+  // trigger parent paths
+  const parts = path.split('/').filter(Boolean);
+  for (let i = parts.length - 1; i >= 1; i--) {
+    const parentPath = '/' + parts.slice(0, i).join('/');
+    if (demoListeners[parentPath]) {
+      dbGet(parentPath).then(v => demoListeners[parentPath].forEach(cb => cb(v)));
+    }
+  }
+}
+
+function dbPush(path, value) {
+  const id = Math.random().toString(36).slice(2, 10);
+  dbSet(path + '/' + id, value);
+  return Promise.resolve({ key: id });
+}
+
+// ─── UTILITIES ───────────────────────────
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('show'));
+  document.getElementById(id).classList.add('show');
+  window.scrollTo(0, 0);
+}
+
+function genCode() {
+  return Math.random().toString(36).slice(2,8).toUpperCase();
+}
+
+function genId() {
+  return Math.random().toString(36).slice(2,14);
+}
+
+function spawnConfetti(n=20) {
+  const colors = ['#ff3cac','#fbd24b','#06b6d4','#10b981','#ef4444','#7c3aed'];
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement('div');
+    el.className = 'conf';
+    el.style.cssText = `left:${Math.random()*100}vw;top:-12px;background:${colors[~~(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.2+Math.random()*1.4}s;animation-delay:${Math.random()*.3}s`;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', ()=>el.remove());
+  }
+}
+
+function renderLb(players, containerId, myName='') {
+  const sorted = Object.values(players||{}).sort((a,b)=>b.score-a.score);
+  const medals = ['🥇','🥈','🥉'];
+  const html = sorted.slice(0,15).map((p,i)=>`
+    <div class="lb-row ${p.name===myName?'me':''}" style="animation-delay:${i*.05}s">
+      <div class="lb-rank ${i<3?'top':''}">${i<3?medals[i]:i+1}</div>
+      <div class="lb-name">${p.name}${p.name===myName?' <span style="color:var(--gold);font-size:11px">(you)</span>':''}</div>
+      <div class="lb-pts">${p.score}</div>
+    </div>`).join('');
+  document.getElementById(containerId).innerHTML = `<div class="lb-card"><div class="lb-head">🏆 STANDINGS <span style="font-size:13px;color:var(--muted)">${sorted.length} players</span></div>${html}</div>`;
+}
+
+// ─── HOST SETUP ──────────────────────────
+function showHostSetup() {
+  go('s-host-setup');
+  const inp = document.getElementById('host-name-input');
+  inp.addEventListener('input', ()=>{
+    document.getElementById('create-game-btn').disabled = inp.value.trim().length < 2;
+  });
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter' && inp.value.trim().length>=2) createGame(); });
+}
+
+async function createGame() {
+  const name = document.getElementById('host-name-input').value.trim();
+  if (!name) return;
+  playerName = name;
+  isHost = true;
+  gameId = genCode();
+  playerId = 'host_' + genId();
+
+  const gameData = {
+    state: { phase: 'lobby', currentQ: -1, started: false },
+    host: { name, id: playerId },
+    players: {}
+  };
+
+  await dbSet('/games/' + gameId, gameData);
+
+  document.getElementById('lb-game-code').textContent = gameId;
+  const joinUrl = window.location.href.split('?')[0] + '?join=' + gameId;
+  document.getElementById('join-url-display').textContent = joinUrl;
+
+  // QR
+  const qrEl = document.getElementById('qr-container');
+  qrEl.innerHTML = '';
+  new QRCode(qrEl, { text: joinUrl, width:160, height:160, colorDark:'#07070e', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+
+  go('s-host-lobby');
+
+  // Watch players
+  dbOn('/games/' + gameId + '/players', players => {
+    const list = document.getElementById('lobby-player-list');
+    const arr = Object.values(players||{});
+    list.innerHTML = arr.map(p=>`<div class="player-chip"><div class="player-dot"></div>${p.name}</div>`).join('');
+    document.getElementById('player-count').textContent = '(' + arr.length + ')';
+    document.getElementById('launch-game-btn').disabled = arr.length < 1;
+  });
+}
+
+async function launchGame() {
+  await dbUpdate('/games/' + gameId + '/state', { phase: 'waiting', currentQ: 0, started: true });
+  currentQ = 0;
+  showHostQuestion();
+}
+
+// ─── HOST QUESTION CONTROL ───────────────
+function showHostQuestion() {
+  go('s-host-q');
+  const q = QUESTIONS[currentQ];
+  document.getElementById('hq-num').textContent = 'Q' + (currentQ+1);
+  document.getElementById('hq-text').innerHTML = q.emoji + ' ' + q.q;
+  document.getElementById('hq-counter').textContent = 'Q' + (currentQ+1) + '/' + QUESTIONS.length;
+  document.getElementById('hq-prog').style.width = ((currentQ/QUESTIONS.length)*100)+'%';
+  document.getElementById('hq-status').textContent = 'Ready to launch Q' + (currentQ+1) + '. Players are waiting…';
+  document.getElementById('hq-launch-btn').style.display = 'block';
+  document.getElementById('hq-reveal-btn').style.display = 'none';
+  document.getElementById('hq-next-btn').style.display = 'none';
+  document.getElementById('hq-ans-wrap').style.display = 'none';
+  document.getElementById('hq-ans-count').textContent = '0';
+
+  // Count players for denominator
+  dbGet('/games/' + gameId + '/players').then(p => {
+    const n = Object.keys(p||{}).length;
+    document.getElementById('hq-player-count').textContent = n;
+    document.getElementById('hq-total-players').textContent = n;
+  });
+}
+
+async function hostLaunchQuestion() {
+  document.getElementById('hq-launch-btn').style.display = 'none';
+  document.getElementById('hq-reveal-btn').style.display = 'block';
+  document.getElementById('hq-ans-wrap').style.display = 'block';
+  document.getElementById('hq-status').textContent = 'Question is LIVE — waiting for answers…';
+
+  await dbUpdate('/games/' + gameId + '/state', {
+    phase: 'question',
+    currentQ,
+    questionStartedAt: Date.now()
+  });
+
+  // Watch answer count
+  dbOn('/games/' + gameId + '/players', players => {
+    const arr = Object.values(players||{});
+    const answered = arr.filter(p => p.answers && p.answers[currentQ] != null).length;
+    document.getElementById('hq-ans-count').textContent = answered;
+    document.getElementById('hq-total-players').textContent = arr.length;
+    const pct = arr.length > 0 ? (answered/arr.length)*100 : 0;
+    document.getElementById('hq-ans-bar').style.width = pct + '%';
+  });
+}
+
+async function hostReveal() {
+  await dbUpdate('/games/' + gameId + '/state', { phase: 'reveal', currentQ });
+  document.getElementById('hq-reveal-btn').style.display = 'none';
+  document.getElementById('hq-next-btn').style.display = 'block';
+  document.getElementById('hq-status').textContent = 'Answers revealed! Click Next when ready.';
+}
+
+async function hostNextQ() {
+  // Load players, show leaderboard
+  const players = await dbGet('/games/' + gameId + '/players');
+  document.getElementById('hlb-q-num').textContent = currentQ + 1;
+  renderLb(players, 'host-lb-content', playerName);
+  go('s-host-lb');
+
+  // Check if last question
+  const isLast = currentQ >= QUESTIONS.length - 1;
+  document.getElementById('hlb-continue-btn').textContent = isLast ? 'FINISH GAME 🏆' : 'NEXT QUESTION →';
+  document.getElementById('hlb-continue-btn').dataset.last = isLast;
+}
+
+async function hostContinueFromLb() {
+  const isLast = document.getElementById('hlb-continue-btn').dataset.last === 'true';
+  if (isLast) {
+    // Check for draw
+    const players = await dbGet('/games/' + gameId + '/players');
+    const arr = Object.values(players||{}).sort((a,b)=>b.score-a.score);
+    const topScore = arr[0]?.score || 0;
+    const tied = arr.filter(p => p.score === topScore);
+    if (tied.length > 1) {
+      await dbUpdate('/games/' + gameId + '/state', { phase: 'tiebreaker', currentQ: 14 });
+      go('s-host-tie');
+      watchTiebreakerAnswers();
+    } else {
+      hostEndGame();
+    }
+  } else {
+    currentQ++;
+    await dbUpdate('/games/' + gameId + '/state', { phase: 'waiting', currentQ });
+    showHostQuestion();
+  }
+}
+
+function watchTiebreakerAnswers() {
+  dbOn('/games/' + gameId + '/players', players => {
+    const arr = Object.values(players||{});
+    const withBonus = arr.filter(p => p.bonusAnswer);
+    document.getElementById('htie-count').textContent = withBonus.length;
+    const pct = arr.length > 0 ? (withBonus.length/arr.length)*100 : 0;
+    document.getElementById('htie-bar').style.width = pct + '%';
+  });
+}
+
+async function showTiebreakerAnswers() {
+  const players = await dbGet('/games/' + gameId + '/players');
+  const arr = Object.values(players||{}).filter(p => p.bonusAnswer);
+  const html = arr.map(p => `
+    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;color:var(--a1);font-weight:700;margin-bottom:4px">${p.name}</div>
+      <div style="font-size:15px">${p.bonusAnswer}</div>
+    </div>`).join('');
+  document.getElementById('htie-answers-list').innerHTML = html || '<p style="color:var(--muted)">No answers yet</p>';
+  document.getElementById('htie-answers').style.display = 'block';
+  document.getElementById('htie-show-btn').style.display = 'none';
+}
+
+async function hostEndGame() {
+  await dbUpdate('/games/' + gameId + '/state', { phase: 'final' });
+  const players = await dbGet('/games/' + gameId + '/players');
+  renderLb(players, 'host-final-lb');
+  go('s-host-final');
+  spawnConfetti(60);
+}
+
+// ─── JOIN ────────────────────────────────
+function showJoin() {
+  go('s-join');
+  // Pre-fill from URL param
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('join');
+  if (code) document.getElementById('join-code-input').value = code.toUpperCase();
+
+  const codeInp = document.getElementById('join-code-input');
+  const nameInp = document.getElementById('join-name-input');
+  const btn = document.getElementById('join-btn');
+
+  function check() { btn.disabled = codeInp.value.trim().length < 4 || nameInp.value.trim().length < 2; }
+  codeInp.addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); check(); });
+  nameInp.addEventListener('input', check);
+  check();
+  nameInp.addEventListener('keydown', e => { if(e.key==='Enter') joinGame(); });
+}
+
+async function joinGame() {
+  const code = document.getElementById('join-code-input').value.trim().toUpperCase();
+  const name = document.getElementById('join-name-input').value.trim();
+  const errEl = document.getElementById('join-error');
+  errEl.style.display = 'none';
+
+  const game = await dbGet('/games/' + code);
+  if (!game) { errEl.textContent = '❌ Game not found. Check the code and try again.'; errEl.style.display='block'; return; }
+  if (game.state?.phase === 'final') { errEl.textContent = '❌ This game has already ended.'; errEl.style.display='block'; return; }
+
+  // Check name not taken
+  const players = game.players || {};
+  const taken = Object.values(players).some(p => p.name.toLowerCase() === name.toLowerCase());
+  if (taken) { errEl.textContent = '❌ That name is already taken — choose another.'; errEl.style.display='block'; return; }
+
+  gameId = code;
+  playerName = name;
+  playerId = genId();
+  isHost = false;
+
+  await dbSet('/games/' + gameId + '/players/' + playerId, { name, score: 0, answers: {} });
+
+  go('s-player-lobby');
+  watchGameState();
+
+  // Watch player list in lobby
+  dbOn('/games/' + gameId + '/players', players => {
+    const arr = Object.values(players||{});
+    document.getElementById('player-lobby-list').innerHTML = arr.map(p=>`<div class="player-chip"><div class="player-dot"></div>${p.name}</div>`).join('');
+  });
+}
+
+// ─── PLAYER: WATCH GAME STATE ─────────────
+function watchGameState() {
+  dbOn('/games/' + gameId + '/state', state => {
+    if (!state) return;
+    const phase = state.phase;
+
+    if (phase === 'lobby') { go('s-player-lobby'); }
+    else if (phase === 'waiting') {
+      currentQ = state.currentQ;
+      myScore = 0; // will reload from db
+      dbGet('/games/' + gameId + '/players/' + playerId).then(p => {
+        myScore = p?.score || 0;
+        document.getElementById('pw-score').textContent = myScore;
+        document.getElementById('pw-title').textContent = currentQ === 0 ? 'Get Ready!' : 'Nice work!';
+        document.getElementById('pw-sub').innerHTML = 'The host is about to launch Q'+(currentQ+1)+'<span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span>';
+      });
+      go('s-player-wait');
+    }
+    else if (phase === 'question') {
+      currentQ = state.currentQ;
+      dbGet('/games/' + gameId + '/players/' + playerId).then(p => {
+        myScore = p?.score || 0;
+        const alreadyAnswered = p?.answers?.[currentQ] != null;
+        if (!alreadyAnswered) {
+          renderPlayerQuestion(state.questionStartedAt);
+        }
+      });
+    }
+    else if (phase === 'reveal') {
+      // show correct answer
+      revealPlayerAnswer();
+    }
+    else if (phase === 'tiebreaker') {
+      showPlayerTiebreaker();
+    }
+    else if (phase === 'final') {
+      showPlayerFinal();
+    }
+  });
+
+  // Also watch leaderboard updates (when host moves to reveal, we show lb)
+  // Actually handled via phase transitions above
+}
+
+// ─── PLAYER QUESTION ─────────────────────
+let playerTimerInterval = null;
+let playerAnswered = false;
+
+function renderPlayerQuestion(startedAt) {
+  const q = QUESTIONS[currentQ];
+  playerAnswered = false;
+
+  document.getElementById('pq-num').textContent = 'Q' + (currentQ+1);
+  document.getElementById('pq-counter').textContent = 'Q'+(currentQ+1)+'/'+QUESTIONS.length;
+  document.getElementById('pq-text').innerHTML = q.emoji + ' ' + q.q;
+  document.getElementById('pq-prog').style.width = ((currentQ/QUESTIONS.length)*100)+'%';
+  document.getElementById('pq-score').textContent = myScore;
+
+  const fact = document.getElementById('pq-fact');
+  fact.classList.remove('show');
+  fact.textContent = '';
+
+  // Options
+  const grid = document.getElementById('pq-opts');
+  const isLong = q.opts.some(o=>o.length>16);
+  grid.className = 'opts' + (isLong ? '' : ' two-col');
+  grid.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => playerSelectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  go('s-player-q');
+
+  // Timer — sync to when question started
+  clearInterval(playerTimerInterval);
+  const elapsed = startedAt ? Math.floor((Date.now() - startedAt) / 1000) : 0;
+  let timeLeft = Math.max(0, 15 - elapsed);
+  updatePlayerTimer(timeLeft);
+
+  playerTimerInterval = setInterval(() => {
+    timeLeft--;
+    updatePlayerTimer(timeLeft);
+    if (timeLeft <= 0) {
+      clearInterval(playerTimerInterval);
+      if (!playerAnswered) playerSelectAnswer(-1);
+    }
+  }, 1000);
+}
+
+function updatePlayerTimer(t) {
+  const circ = 125.6;
+  const offset = circ - (t / 15) * circ;
+  const circle = document.getElementById('pq-timer-circle');
+  circle.style.strokeDashoffset = offset;
+  circle.style.stroke = t <= 5 ? 'var(--red)' : t <= 8 ? 'var(--gold)' : 'var(--a1)';
+  document.getElementById('pq-timer-num').textContent = t;
+}
+
+async function playerSelectAnswer(idx) {
+  if (playerAnswered) return;
+  playerAnswered = true;
+  clearInterval(playerTimerInterval);
+
+  const q = QUESTIONS[currentQ];
+  const isCorrect = idx === q.ans;
+  if (isCorrect) { myScore++; spawnConfetti(15); }
+
+  // Save answer to DB
+  const updates = {};
+  updates['answers/' + currentQ] = idx;
+  updates['score'] = myScore;
+  await dbUpdate('/games/' + gameId + '/players/' + playerId, updates);
+
+  // Mark selection visually
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach((b,i) => {
+    b.disabled = true;
+    if (i === idx) b.classList.add(isCorrect ? 'correct' : 'wrong');
+  });
+
+  // Fun fact
+  const fact = document.getElementById('pq-fact');
+  fact.innerHTML = (isCorrect ? '✅ Correct! ' : idx===-1 ? '⏱️ Time\'s up! ' : '❌ Not quite! ') +
+    q.fact.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  setTimeout(() => fact.classList.add('show'), 60);
+}
+
+function revealPlayerAnswer() {
+  // If they've already seen reveal, skip; otherwise show correct answer
+  // The phase=reveal comes from host — show correct answer on options
+  const q = QUESTIONS[currentQ];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach((b,i) => {
+    b.disabled = true;
+    if (i === q.ans) b.classList.add('correct');
+  });
+
+  const fact = document.getElementById('pq-fact');
+  if (!fact.classList.contains('show')) {
+    fact.innerHTML = '✅ ' + q.fact.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    setTimeout(() => fact.classList.add('show'), 60);
+  }
+
+  // Show leaderboard
+  setTimeout(async () => {
+    const players = await dbGet('/games/' + gameId + '/players');
+    document.getElementById('plb-q-num').textContent = currentQ + 1;
+    renderLb(players, 'player-lb-content', playerName);
+    go('s-player-lb');
+  }, 1800);
+}
+
+// ─── TIEBREAKER ──────────────────────────
+function showPlayerTiebreaker() {
+  document.getElementById('ptie-title').textContent = TIEBREAKER.q;
+  document.getElementById('ptie-sub').textContent = TIEBREAKER.sub;
+  document.getElementById('ptie-input').style.display = 'block';
+  document.getElementById('ptie-submit-btn').style.display = 'block';
+  document.getElementById('ptie-submitted').style.display = 'none';
+  go('s-player-tie');
+}
+
+async function submitTiebreaker() {
+  const ans = document.getElementById('ptie-input').value.trim();
+  if (!ans) return;
+  await dbUpdate('/games/' + gameId + '/players/' + playerId, { bonusAnswer: ans });
+  document.getElementById('ptie-input').style.display = 'none';
+  document.getElementById('ptie-submit-btn').style.display = 'none';
+  document.getElementById('ptie-submitted').style.display = 'block';
+}
+
+// ─── FINAL ───────────────────────────────
+async function showPlayerFinal() {
+  const players = await dbGet('/games/' + gameId + '/players');
+  const me = players?.[playerId] || { score: myScore };
+  const sc = me.score;
+
+  document.getElementById('p-final-score').textContent = sc;
+  const v = VERDICTS.find(v => sc >= v.min && sc <= v.max);
+  document.getElementById('p-final-verdict').textContent = v.title;
+  document.getElementById('p-final-msg').textContent = v.msg;
+
+  renderLb(players, 'player-final-lb', playerName);
+  go('s-player-final');
+
+  const arr = Object.values(players||{}).sort((a,b)=>b.score-a.score);
+  if (arr[0]?.name === playerName) spawnConfetti(80);
+}
+
+// ─── INIT ────────────────────────────────
+initFirebase();
+
+// Auto-route from URL param
+const params = new URLSearchParams(window.location.search);
+if (params.get('join')) {
+  showJoin();
+}
+if (params.get('host')) {
+  showHostSetup();
+}
+
+// Show demo notice
+if (IS_DEMO) {
+  const notice = document.createElement('div');
+  notice.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:10px 18px;font-size:12px;color:var(--gold);z-index:100;text-align:center;max-width:90vw;line-height:1.5';
+  notice.innerHTML = '⚠️ <strong>Demo mode</strong> — same-device only.<br>Add your Firebase config for real multiplayer.';
+  document.body.appendChild(notice);
+}
+</script>
+</body>
+</html>
